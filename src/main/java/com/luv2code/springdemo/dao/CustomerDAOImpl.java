@@ -2,8 +2,9 @@ package com.luv2code.springdemo.dao;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,33 +14,33 @@ import com.luv2code.springdemo.entity.Customer;
 @Repository
 public class CustomerDAOImpl implements CustomerDAO {
 
-	// need to inject the session factory
+	private EntityManager entityManager;
+
 	@Autowired
-	private SessionFactory sessionFactory;
+	public CustomerDAOImpl(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 			
 	@Override
 	public List<Customer> getCustomers() {
 		
 		// get the current hibernate session
-		Session currentSession = sessionFactory.getCurrentSession();
+		Session currentSession = entityManager.unwrap(Session.class);
 				
 		// create a query  ... sort by last name
 		Query<Customer> theQuery = 
 				currentSession.createQuery("from Customer order by lastName",
 											Customer.class);
-		
-		// execute query and get result list
-		List<Customer> customers = theQuery.getResultList();
-				
-		// return the results		
-		return customers;
+
+		// return the results
+		return theQuery.getResultList();
 	}
 
 	@Override
 	public void saveCustomer(Customer theCustomer) {
 
 		// get current hibernate session
-		Session currentSession = sessionFactory.getCurrentSession();
+		Session currentSession = entityManager.unwrap(Session.class);
 		
 		// save/upate the customer ... finally LOL
 		currentSession.saveOrUpdate(theCustomer);
@@ -50,19 +51,17 @@ public class CustomerDAOImpl implements CustomerDAO {
 	public Customer getCustomer(int theId) {
 
 		// get the current hibernate session
-		Session currentSession = sessionFactory.getCurrentSession();
+		Session currentSession = entityManager.unwrap(Session.class);
 		
 		// now retrieve/read from database using the primary key
-		Customer theCustomer = currentSession.get(Customer.class, theId);
-		
-		return theCustomer;
+		return currentSession.get(Customer.class, theId);
 	}
 
 	@Override
 	public void deleteCustomer(int theId) {
 
 		// get the current hibernate session
-		Session currentSession = sessionFactory.getCurrentSession();
+		Session currentSession = entityManager.unwrap(Session.class);
 		
 		// delete object with primary key
 		Query theQuery = 
