@@ -7,6 +7,12 @@ https://www.udemy.com/course/spring-hibernate-tutorial/
 ## Docker related commands
 https://spring.io/guides/gs/spring-boot-docker/
 
+- Force Java 11
+
+`export JAVA_HOME=$(/usr/libexec/java_home -v 11)`
+
+`export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.5.jdk/Contents/Home`
+
 - Basic example
 
 `./mvnw clean package -Dmaven.test.skip=true`
